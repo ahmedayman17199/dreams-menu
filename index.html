@@ -43,6 +43,13 @@ html,body{background:var(--bg);color:var(--ink);font-family:Cairo,system-ui,sans
 .brand h1{font-size:22px;font-weight:900;color:var(--teal);line-height:1.1}
 .brand p{font-size:13px;color:var(--muted)}
 .cathead{display:flex;align-items:center;gap:10px;margin:26px 2px 10px;font-size:20px;font-weight:900;scroll-margin-top:60vh}
+.subhead{font-size:16px;font-weight:900;color:var(--ink);margin:18px 4px 4px;display:flex;align-items:center;gap:8px}
+.subhead::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--pink)}
+.tx .en{display:block;font-size:11px;color:var(--muted);direction:ltr;text-align:right;margin-top:-2px}
+.card .ph img.t3d{object-fit:contain;background:radial-gradient(circle at 50% 40%,#fff,#f6ead8)}
+body.thumb .list,body.thumb .tabs,body.thumb .info,body.thumb .hint,body.thumb #labels,body.thumb #lines{display:none!important}
+body.thumb,body.thumb .stage{background:transparent!important;border:0;box-shadow:none}
+body.thumb .stage{position:fixed;inset:0;height:100vh}
 .cathead::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,transparent,currentColor);opacity:.25}
 .card{position:relative;display:flex;gap:12px;align-items:center;background:var(--card);border-radius:18px;
   padding:10px;margin:12px 0;border:1px solid #efe3d3;min-height:132px;
@@ -110,6 +117,8 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:30px;lette
 /* ================= DATA ================= */
 const CATS={apps:{n:'المقبلات',t:'مقبلات',c:'#e0568f'},crepe:{n:'الكريب',t:'كريب',c:'#d7262e'},syrian:{n:'ساندوتشات سوري',t:'سوري',c:'#2a9fb8'},
  cold:{n:'المشروبات الباردة',t:'بارد',c:'#5fb446'},hot:{n:'المشروبات الساخنة',t:'ساخن',c:'#b5521b'},sweets:{n:'الحلويات',t:'حلويات',c:'#e0568f'}};
+const Lq=(col,f,l,top,op)=>({k:'liquid',col,f,l,top,op}),Tp=(k,l,o)=>Object.assign({k,pos:'top',l},o||{}),In=(k,l,o)=>Object.assign({k,pos:'in',l},o||{});
+const DRINKSH=['glass','jar','cup','cupFlat','mug','teaGlass','plate','demi','latteGlass'];
 const ITEMS=[
  {c:'apps',n:'باكيت بطاطس',p:35,d:'مع التوابل و كاتشب و مايونيز',img:'a1',shell:'bag',ing:['spices','fries','ketchupCup','mayoCup']},
  {c:'apps',n:'باكيت بطاطس بصوص',p:40,d:'مع شيدر صوص أو باربيكيو صوص أو دريمز صوص',img:'a2',shell:'bag',ing:['cheddar','fries','bbqCup','dreamsCup']},
@@ -127,32 +136,54 @@ const ITEMS=[
  {c:'syrian',n:'سوري شيش على الفحم',p:80,d:'دجاج شيش مشوي مع خضار باربكيو، صوص باربكيو',img:'s3',shell:'wrap',ing:['bbq','peppers','shishSkewer']},
  {c:'syrian',n:'سوري دجاج فاهيتا',p:85,d:'دجاج فاهيتا مع فلفل ألوان، بصل مشوي، زيتون، تومية، خيار مخلل',img:'s4',shell:'wrap',ing:['toum','pickles','olives','grilledOnion','peppers','fajita']},
  {c:'syrian',n:'سوري كفته على الفحم',p:90,d:'لحم كفته بلدي على الفحم، بصل مشوي، بقدونس، طحينة و سماق',img:'s5',shell:'wrap',ing:['sumac','tahini','parsley','grilledOnion','kofta']},
- {c:'cold',n:'عصائر فريش',img:'d_juice',shell:'glass',rows:[['مانجا وسط',40],['مانجا كبير',60],['فراولة / جوافة / برتقال وسط',35],['فراولة / جوافة / برتقال كبير',50],['ليمون فريش وسط',25],['ليمون فريش كبير',40],['ليمون نعناع وسط',30],['ليمون نعناع كبير',45]],
+ {id:'juice',c:'cold',n:'عصائر فريش',shell:'glass',rows:[['مانجا وسط',40],['مانجا كبير',60],['فراولة / جوافة / برتقال وسط',35],['فراولة / جوافة / برتقال كبير',50],['ليمون فريش وسط',25],['ليمون فريش كبير',40],['ليمون نعناع وسط',30],['ليمون نعناع كبير',45]],
   ing:[{k:'fruit',cols:['#d8342b','#f2a33a','#f5cd3a'],at:1.0,l:'قطع فواكه فريش'},{k:'liquid',col:'#f49a9a',h:.62,at:.66,l:'فراولة / جوافة'},{k:'liquid',col:'#f6a623',h:.62,at:.22,l:'مانجا / برتقال'}]},
- {c:'cold',n:'كوكتيل',img:'d_cocktail',shell:'glass',rows:[['مانجا كيوي / خوخ وسط',50],['مانجا كيوي / خوخ كبير',70],['كوكتيل مانجا / فراولة / جوافة',60],['فلوريدا (جوافة + مانجا + فراولة + بلو بيري)',70]],
+ {id:'cocktail',c:'cold',n:'كوكتيل',shell:'glass',rows:[['مانجا كيوي / خوخ وسط',50],['مانجا كيوي / خوخ كبير',70],['كوكتيل مانجا / فراولة / جوافة',60],['فلوريدا (جوافة + مانجا + فراولة + بلو بيري)',70]],
   ing:[{k:'mint',at:1.02,l:'نعناع'},{k:'fruit',cols:['#7cb342','#f2a33a','#d8342b','#3d3b8e'],at:.45,spread:.4,big:1,l:'كيوي، مانجا، فراولة، بلو بيري'},{k:'liquid',col:'#f7b267',op:.55,h:1.2,at:.45,l:'عصير كوكتيل'}]},
- {c:'cold',n:'ميلك شيك',img:'d_shake',shell:'cup',rows:[['شوكليت',80],['نوتيلا',80],['كراميل',80],['فانيليا',80],['لوتس',80],['فراولة',80],['اوريو',80],['مانجا',80],['كيوي',80],['سنكيرز & تويكس',90]],two:1,
+ {id:'shake',c:'cold',n:'ميلك شيك',shell:'cup',rows:[['شوكليت',80],['نوتيلا',80],['كراميل',80],['فانيليا',80],['لوتس',80],['فراولة',80],['اوريو',80],['مانجا',80],['كيوي',80],['سنكيرز & تويكس',90]],two:1,
   note:'إضافات: كريمة • آيس كريم • صوصات',
   ing:[{k:'wafer',at:1.18,l:'ويفر واوريو'},{k:'spiral',col:'#4a2412',at:1.12,l:'صوص شوكولاتة'},{k:'cream',at:.92,l:'كريمة'},{k:'liquid',col:'#c89f7a',h:.95,at:.47,l:'ميلك شيك'},{k:'liquid',col:'#4a2412',h:.2,at:.08,l:'صوص في القاع'}]},
- {c:'cold',n:'سموذي',img:'d_smoothie',shell:'jar',rows:[['فراولة',50],['مانجا',50],['كيوي',50],['بلو بيري',60],['ميكس بيري',70],['خوخ',50],['بينا كولادا',80],['بطيخ',50],['ليمون نعناع',45],['اناناس',50],['باشن فروت',75]],two:1,
+ {id:'smoothie',c:'cold',n:'سموذي',shell:'jar',rows:[['فراولة',50],['مانجا',50],['كيوي',50],['بلو بيري',60],['ميكس بيري',70],['خوخ',50],['بينا كولادا',80],['بطيخ',50],['ليمون نعناع',45],['اناناس',50],['باشن فروت',75]],two:1,
   ing:[{k:'mint',at:1.06,l:'نعناع'},{k:'berries',at:.98,l:'بلو بيري وبلاك بيري'},{k:'strawberry',at:.95,l:'فراولة'},{k:'liquid',col:'#b03a6e',h:1.05,at:.42,l:'سموذي فواكه مثلجة'}]},
- {c:'cold',n:'موهيتو',img:'d_mojito',shell:'glass',rows:[['كلاسيك',60],['بلو بيري',60],['صن شاين',60],['فراولة',60],['ميكس اناناس & كيوي',70],['شيري كولا',60]],
+ {id:'mojito',c:'cold',n:'موهيتو',shell:'glass',rows:[['كلاسيك',60],['بلو بيري',60],['صن شاين',60],['فراولة',60],['ميكس اناناس & كيوي',70],['شيري كولا',60]],
   ing:[{k:'mint',at:.95,spread:.12,l:'نعناع فريش'},{k:'lime',at:.5,spread:.3,l:'شرايح ليمون'},{k:'ice',at:.62,spread:.3,l:'تلج'},{k:'liquid',col:'#c9f07a',op:.45,h:1.2,at:.45,l:'صودا وشراب موهيتو'}]},
- {c:'cold',n:'آيس كوفي',img:'d_icecoffee',shell:'cup',rows:[['فرابيه كراميل',85],['فرابيه شوكليت',85],['فرابيه فانيليا',80],['فرابيه لوتس',80],['فرابتشينو كلاسيك كراميل',90],['آيس كوفي',70],['آيس لاتيه',60],['آيس لاتيه كراميل',80],['آيس اسبانش لاتيه',75],['آيس لاتيه ماتشا',95],['آيس لاتيه ماتشا جوز هند',95]],two:1,
-  ing:[{k:'spiral',col:'#4a2412',at:1.12,l:'صوص كراميل وشوكولاتة'},{k:'cream',at:.92,l:'كريمة'},{k:'ice',at:.6,spread:.3,l:'تلج'},{k:'liquid',col:'#f0e0c8',h:.55,at:.6,op:.9,l:'لبن بارد'},{k:'liquid',col:'#7b4a2a',h:.55,at:.2,l:'إسبريسو مثلج'}]},
- {c:'cold',n:'مشروبات غازية',img:'d_soft',shell:'glass',rows:[['مياه صغيرة',10],['بيبسي صغير',25],['بيبسي كبير',30],['في كولا كبير',30],['فيروز',30],['بيريل',30],['ريد بول',75]],
+ {id:'f_caramel',c:'cold',sub:'آيس كوفي',n:'فرابيه كراميل',en:'Caramel Frappé',p:85,shell:'cup',ing:[Tp('spiral','صوص كراميل',{col:'#b8691f'}),Tp('cream','كريمة مخفوقة'),Lq('#c9a27a',.85,'فرابيه: قهوة + لبن + تلج مجروش + كراميل','frappe'),Lq('#b8691f',.15,'صوص كراميل')]},
+ {id:'f_choc',c:'cold',sub:'آيس كوفي',n:'فرابيه شوكليت',en:'Chocolate Frappé',p:85,shell:'cup',ing:[Tp('spiral','صوص شوكولاتة',{col:'#3a1a0c'}),Tp('cream','كريمة مخفوقة'),Lq('#8a5a3c',.85,'فرابيه: قهوة + لبن + تلج مجروش + شوكولاتة','frappe'),Lq('#3a1a0c',.15,'صوص شوكولاتة')]},
+ {id:'f_vanilla',c:'cold',sub:'آيس كوفي',n:'فرابيه فانيليا',en:'Vanilla Frappé',p:80,shell:'cup',ing:[Tp('cream','كريمة مخفوقة'),Lq('#efe1c4',.85,'فرابيه: قهوة + لبن + تلج مجروش + فانيليا','frappe'),Lq('#f0d595',.15,'سيرب فانيليا')]},
+ {id:'f_lotus',c:'cold',sub:'آيس كوفي',n:'فرابيه لوتس',en:'Lotus Frappé',p:80,shell:'cup',ing:[Tp('crumbs','بسكويت لوتس مطحون'),Tp('spiral','صوص لوتس',{col:'#b5702e'}),Tp('cream','كريمة مخفوقة'),Lq('#c99a6a',.85,'فرابيه: قهوة + لبن + تلج مجروش + لوتس','frappe'),Lq('#b5702e',.15,'زبدة لوتس')]},
+ {id:'frappuccino',c:'cold',sub:'آيس كوفي',n:'فرابتشينو كلاسيك كراميل',en:'Classic Caramel Frappuccino',p:90,shell:'cup',ing:[Tp('spiral','صوص كراميل',{col:'#b8691f'}),Tp('cream','كريمة مخفوقة'),Lq('#b08562',.62,'فرابتشينو: قهوة + لبن + تلج مجروش','frappe'),Lq('#2a1509',.18,'شوت إسبريسو'),Lq('#b8691f',.2,'صوص كراميل')]},
+ {id:'icedcoffee',c:'cold',sub:'آيس كوفي',n:'آيس كوفي',en:'Iced Coffee',p:70,shell:'cupFlat',ing:[In('ice','تلج'),Lq('#e7d4b9',.4,'لبن بارد'),Lq('#4a2a16',.6,'قهوة باردة محلاة')]},
+ {id:'icedlatte',c:'cold',sub:'آيس كوفي',n:'آيس لاتيه',en:'Iced Latte',p:60,shell:'cupFlat',ing:[In('ice','تلج'),Lq('#3a1c0c',.25,'شوت إسبريسو'),Lq('#efe2cf',.75,'لبن بارد')]},
+ {id:'icedcaramel',c:'cold',sub:'آيس كوفي',n:'آيس لاتيه كراميل',en:'Iced Caramel Latte',p:80,shell:'cupFlat',ing:[Tp('hatch','صوص كراميل',{col:'#b8691f'}),In('ice','تلج'),Lq('#3a1c0c',.22,'شوت إسبريسو'),Lq('#efe2cf',.6,'لبن بارد'),Lq('#b8691f',.18,'سيرب كراميل')]},
+ {id:'icedspanish',c:'cold',sub:'آيس كوفي',n:'آيس اسبانش لاتيه',en:'Iced Spanish Latte',p:75,shell:'cupFlat',ing:[In('ice','تلج'),Lq('#3a1c0c',.22,'دبل إسبريسو'),Lq('#efe2cf',.58,'لبن بارد'),Lq('#f2dfb8',.2,'لبن مكثف محلى')]},
+ {id:'icedmatcha',c:'cold',sub:'آيس كوفي',n:'آيس لاتيه ماتشا',en:'Iced Matcha Latte',p:95,shell:'cupFlat',ing:[In('ice','تلج'),Lq('#7da33a',.3,'ماتشا'),Lq('#eef0dd',.7,'لبن بارد')]},
+ {id:'icedmatchacoco',c:'cold',sub:'آيس كوفي',n:'آيس لاتيه ماتشا جوز هند',en:'Iced Coconut Matcha Latte',p:95,shell:'cupFlat',ing:[Tp('coconut','جوز هند مبشور'),In('ice','تلج'),Lq('#7da33a',.3,'ماتشا'),Lq('#f7f4ec',.7,'لبن جوز هند')]},
+ {id:'soft',c:'cold',n:'مشروبات غازية',shell:'glass',rows:[['مياه صغيرة',10],['بيبسي صغير',25],['بيبسي كبير',30],['في كولا كبير',30],['فيروز',30],['بيريل',30],['ريد بول',75]],
   ing:[{k:'lime',at:1.0,spread:.03,l:'شريحة ليمون'},{k:'ice',at:.75,spread:.15,l:'تلج'},{k:'bubbles',at:.45,spread:.4,l:'فقاعات'},{k:'liquid',col:'#3b1d10',op:.85,h:1.15,at:.43,l:'مشروب غازي'}]},
- {c:'hot',n:'شاي وأعشاب',img:'h_tea',shell:'teaGlass',rows:[['شاي','15','Tea'],['شاي بالنعناع','20','Mint Tea'],['شاي أخضر / ينسون / نعناع / قرفة','20','Green Tea / Anise / Mint / Cinnamon'],['شاي باللبن','30','Milk Tea'],['كوكتيل أعشاب','30','Herbal Cocktail'],['قرفة باللبن','35','Cinnamon with Milk'],['هوت شوكليت','40','Hot Chocolate'],['هوت سيدار','60','Hot Cider']],
+ {id:'tea',c:'hot',sub:'شاي وأعشاب',n:'شاي وأعشاب',shell:'teaGlass',rows:[['شاي','15','Tea'],['شاي بالنعناع','20','Mint Tea'],['شاي أخضر / ينسون / نعناع / قرفة','20','Green Tea / Anise / Mint / Cinnamon'],['شاي باللبن','30','Milk Tea'],['كوكتيل أعشاب','30','Herbal Cocktail'],['قرفة باللبن','35','Cinnamon with Milk'],['هوت شوكليت','40','Hot Chocolate'],['هوت سيدار','60','Hot Cider']],
   ing:[{k:'mint',at:.9,spread:.05,l:'نعناع'},{k:'liquid',col:'#b5521b',op:.7,h:.62,at:.42,l:'شاي'}]},
- {c:'hot',n:'القهوة',img:'h_coffee',shell:'mug',rows:[['قهوة','25','Arabic Coffee'],['نسكافيه بلاك','25','Nescafé Black'],['كوفي ميكس','25','Coffee Mix'],['اسبريسو','30','Espresso'],['قهوة دبل','35','Double Coffee'],['قهوة فرنساوي','40','French Coffee'],['نسكافيه','40','Nescafé'],['لاتيه','45','Latte'],['كابتشينو','45','Cappuccino'],['فلات وايت','50','Flat White'],['اسبانيش لاتيه','65','Spanish Latte'],['موكا وايت','70','White Mocha'],['كراميل ميكاتو','70','Caramel Macchiato'],['ماتشا','80','Matcha']],two:1,
-  ing:[{k:'beans',at:1.02,l:'بن محمص'},{k:'liquid',col:'#ead2b0',h:.07,at:.9,l:'رغوة'},{k:'liquid',col:'#d9b48f',h:.3,at:.62,l:'لبن مبخر'},{k:'liquid',col:'#3e2212',h:.26,at:.2,l:'إسبريسو'}]},
- {c:'sweets',n:'تشيز كيك',img:'d_cake',shell:'plate',rows:[['تشيز كيك',70]],
+ {id:'arabic',c:'hot',sub:'القهوة',n:'قهوة',en:'Arabic Coffee',p:25,shell:'demi',ing:[Lq('#8a5a35',.08,'وش القهوة','turkish'),Lq('#2b170c',.92,'بن تركي محوج مغلي')]},
+ {id:'nesblack',c:'hot',sub:'القهوة',n:'نسكافيه بلاك',en:'Nescafé Black',p:25,shell:'mug',ing:[Lq('#6a4426',.06,'رغوة خفيفة','crema'),Lq('#2a160b',.94,'نسكافيه + مياه سخنة')]},
+ {id:'mix',c:'hot',sub:'القهوة',n:'كوفي ميكس',en:'Coffee Mix',p:25,shell:'mug',ing:[Lq('#d9b994',.1,'رغوة','foam'),Lq('#a87a52',.9,'كوفي ميكس: قهوة + كريمر + سكر')]},
+ {id:'espresso',c:'hot',sub:'القهوة',n:'اسبريسو',en:'Espresso',p:30,shell:'demi',fill:.6,ing:[Lq('#b9783c',.18,'كريما','crema'),Lq('#2a1509',.82,'شوت إسبريسو')]},
+ {id:'double',c:'hot',sub:'القهوة',n:'قهوة دبل',en:'Double Coffee',p:35,shell:'demi',ing:[Lq('#8a5a35',.08,'وش القهوة','turkish'),Lq('#2b170c',.92,'قهوة تركي دبل (ضعف البن)')]},
+ {id:'french',c:'hot',sub:'القهوة',n:'قهوة فرنساوي',en:'French Coffee',p:40,shell:'mug',ing:[Tp('hazel','بندق مجروش'),Lq('#e8d3b5',.12,'رغوة لبن','foam'),Lq('#a77b55',.88,'قهوة فرنساوي بالبندق + لبن')]},
+ {id:'nescafe',c:'hot',sub:'القهوة',n:'نسكافيه',en:'Nescafé',p:40,shell:'mug',ing:[Lq('#e3c9a3',.15,'رغوة','foam'),Lq('#efe2cf',.45,'لبن سخن'),Lq('#4a2c18',.4,'نسكافيه')]},
+ {id:'latte',c:'hot',sub:'القهوة',n:'لاتيه',en:'Latte',p:45,shell:'latteGlass',ing:[Lq('#f1e6d4',.14,'رغوة لبن','art'),Lq('#efe2cf',.62,'لبن مبخر'),Lq('#2a1509',.24,'شوت إسبريسو')]},
+ {id:'cappuccino',c:'hot',sub:'القهوة',n:'كابتشينو',en:'Cappuccino',p:45,shell:'mug',ing:[Tp('cocoa','رشة كاكاو'),Lq('#f3e9da',.34,'رغوة لبن كثيفة','cocoaFoam'),Lq('#efe2cf',.33,'لبن مبخر'),Lq('#2a1509',.33,'شوت إسبريسو')]},
+ {id:'flatwhite',c:'hot',sub:'القهوة',n:'فلات وايت',en:'Flat White',p:50,shell:'mug',ing:[Lq('#d8b48a',.08,'ميكروفوم ناعم','art'),Lq('#efe2cf',.42,'لبن مبخر'),Lq('#2a1509',.5,'دبل إسبريسو')]},
+ {id:'spanish',c:'hot',sub:'القهوة',n:'اسبانيش لاتيه',en:'Spanish Latte',p:65,shell:'latteGlass',ing:[Lq('#f1e6d4',.12,'رغوة لبن','foam'),Lq('#efe2cf',.5,'لبن مبخر'),Lq('#2a1509',.22,'دبل إسبريسو'),Lq('#f2dfb8',.16,'لبن مكثف محلى')]},
+ {id:'whitemocha',c:'hot',sub:'القهوة',n:'موكا وايت',en:'White Mocha',p:70,shell:'latteGlass',ing:[Tp('cream','كريمة مخفوقة'),Lq('#efe2cf',.5,'لبن مبخر'),Lq('#2a1509',.25,'شوت إسبريسو'),Lq('#f6ecd9',.25,'صوص وايت شوكليت')]},
+ {id:'macchiato',c:'hot',sub:'القهوة',n:'كراميل ميكاتو',en:'Caramel Macchiato',p:70,shell:'latteGlass',ing:[Tp('hatch','صوص كراميل',{col:'#b8691f'}),Lq('#f3e9da',.14,'رغوة لبن','foam'),Lq('#3a1c0c',.2,'شوت إسبريسو'),Lq('#efe2cf',.51,'لبن مبخر'),Lq('#f0d595',.15,'سيرب فانيليا')]},
+ {id:'matcha',c:'hot',sub:'القهوة',n:'ماتشا',en:'Matcha Latte',p:80,shell:'latteGlass',ing:[Lq('#cfe3a6',.12,'رغوة ماتشا','matchaFoam'),Lq('#8db54a',.45,'ماتشا مخفوقة'),Lq('#eef0dd',.43,'لبن مبخر')]},
+ {id:'cake',c:'sweets',n:'تشيز كيك',shell:'plate',rows:[['تشيز كيك',70]],
   note:'النكهات: بلو بيري • فراولة • كراميل شوكليت • لوتس • ميكس بيري • اوريو',
   ing:[{k:'strawberry',at:.68,spread:.02,l:'فراولة'},{k:'wedge',col:'#c8202a',h:.05,at:.57,l:'صوص فراولة'},{k:'wedge',col:'#fbecc8',h:.42,at:.33,l:'كريمة تشيز'},{k:'wedge',col:'#b0763a',h:.12,at:.06,l:'قاعدة بسكويت'}]},
 ];
 ITEMS.forEach(it=>{if(it.rows&&!it.p){const ps=it.rows.map(r=>+r[1]);it.p=Math.min(...ps);it.from=Math.max(...ps)>it.p;}});
 const ingLabel=x=>typeof x==='string'?LABEL[x]:x.l;
-const SHELL_LABEL={bag:'باكيت ورق',box:'علبة كرافت',crepe:'عجينة الكريب',wrap:'خبز سوري',glass:'كوباية',jar:'برطمان',cup:'كوب بغطاء وشاليموه',mug:'فنجان وصحن',teaGlass:'كوباية شاي',plate:'طبق'};
+ITEMS.forEach(it=>{if(it.id){it.thumb='img/t_'+it.id+'.webp';} if(!it.d&&!it.rows)it.d=it.ing.map(ingLabel).join('، ');});
+const SHELL_LABEL={bag:'باكيت ورق',box:'علبة كرافت',crepe:'عجينة الكريب',wrap:'خبز سوري',glass:'',jar:'',cup:'',cupFlat:'',mug:'',teaGlass:'',plate:'',demi:'',latteGlass:''};
 const LABEL={fries:'بطاطس مقرمشة',spices:'توابل',ketchupCup:'كاتشب',mayoCup:'مايونيز',cheddar:'شيدر صوص',bbqCup:'باربيكيو صوص',
  dreamsCup:'دريمز صوص',parsley:'بقدونس',bbq:'صوص باربيكيو',cheddarDrizzle:'شيدر صوص',crispy:'دجاج كرسبي',chiliRings:'شطة حمرا',
  minced:'لحم مفروم بلدي',spicy:'سبايسي صوص',dreams:'صوص دريمز',ketchup:'كاتشب',mayo:'مايونيز',olives:'زيتون',kabutsha:'كابوتشا',
@@ -167,17 +198,18 @@ const DOT={fries:'#f0bd45',spices:'#c0452a',ketchupCup:'#c3241a',mayoCup:'#efe2b
 
 /* ================= LIST UI ================= */
 const itemsEl=document.getElementById('items'),tabsEl=document.getElementById('tabs');
-let lastCat=null;const cards=[];
+let lastCat=null,lastSub=null;const cards=[];
 ITEMS.forEach((it,i)=>{
   if(it.c!==lastCat){lastCat=it.c;const h=document.createElement('h2');h.className='cathead';h.id='cat-'+it.c;
     h.style.color=CATS[it.c].c;h.textContent=CATS[it.c].n;itemsEl.appendChild(h);
     const b=document.createElement('button');b.textContent=CATS[it.c].n;b.dataset.c=it.c;
     b.textContent=CATS[it.c].t;b.onclick=()=>h.scrollIntoView({behavior:'smooth'});tabsEl.appendChild(b);}
+  if(it.sub&&it.sub!==lastSub){const sh=document.createElement('h3');sh.className='subhead';sh.textContent=it.sub;itemsEl.appendChild(sh);}lastSub=it.sub||null;
   const a=document.createElement('article');a.className='card'+(it.rows?' lst':'');a.dataset.i=i;
   const body=it.rows?`<ul class="rows${it.two?' two':''}">${it.rows.map(r=>`<li><span>${r[0]}${r[2]?`<small>${r[2]}</small>`:''}</span><i></i><b>${r[1]}</b></li>`).join('')}</ul>${it.note?`<div class="note">${it.note}</div>`:''}`:`<p>${it.d}</p>`;
-  a.innerHTML=`<div class="ph"><img src="img/${it.img}.jpg" alt="" loading="lazy"><div class="live"><span>3D</span>معروض فوق</div></div>
-  <div class="tx"><div class="row"><h3>${it.n}</h3><span class="pr">${it.from?'من ':''}${it.p} ج</span></div>${body}
-  <div class="chips">${[...it.ing.map(ingLabel),SHELL_LABEL[it.shell]].map(s=>`<span>${s}</span>`).join('')}</div></div>`;
+  a.innerHTML=`<div class="ph"><img src="${it.thumb||('img/'+it.img+'.jpg')}" class="${it.thumb?'t3d':''}" alt="" loading="lazy"><div class="live"><span>3D</span>معروض فوق</div></div>
+  <div class="tx"><div class="row"><h3>${it.n}${it.en?`<span class="en">${it.en}</span>`:''}</h3><span class="pr">${it.from?'من ':''}${it.p} ج</span></div>${body}
+  <div class="chips">${[...it.ing.map(ingLabel),DRINKSH.includes(it.shell)?null:SHELL_LABEL[it.shell]].filter(Boolean).map(s=>`<span>${s}</span>`).join('')}</div></div>`;
   a.onclick=()=>{const r=a.getBoundingClientRect();window.scrollBy({top:r.top+r.height/2-focusY(),behavior:'smooth'})};
   itemsEl.appendChild(a);cards.push(a);
 });
@@ -207,13 +239,23 @@ if(!ok){document.getElementById('fb').style.display='flex';active=readScroll();s
   addEventListener('scroll',()=>{const a=readScroll();if(a!==active){active=a;setActive(a)}},{passive:true});}
 else (function(){
 const canvas=document.getElementById('gl');
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+const THUMB=(location.hash.match(/^#thumb-([\w-]+)/)||[])[1];if(THUMB){document.body.classList.add('thumb');document.documentElement.style.background='transparent';}
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,preserveDrawingBuffer:!!THUMB});
+renderer.setPixelRatio(THUMB?2:Math.min(devicePixelRatio||1,2));
+renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(34,1,.1,100);
-scene.add(new THREE.HemisphereLight(0xfff6e8,0x8a6a4a,.85));
-const key=new THREE.DirectionalLight(0xffffff,.85);key.position.set(3,6,5);scene.add(key);
-const rim=new THREE.DirectionalLight(0xffd9b0,.45);rim.position.set(-5,2,-4);scene.add(rim);
+scene.add(new THREE.HemisphereLight(0xfff6e8,0x8a6a4a,.3));
+const key=new THREE.DirectionalLight(0xfff4e6,1.5);key.position.set(3,7,4);key.castShadow=true;
+key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-3,right:3,top:3,bottom:-3,near:1,far:20});key.shadow.bias=-.0006;key.shadow.radius=5;scene.add(key);
+const rim=new THREE.DirectionalLight(0xffd9b0,.6);rim.position.set(-5,2.5,-4);scene.add(rim);
+(function(){const pm=new THREE.PMREMGenerator(renderer);const es=new THREE.Scene();
+  es.add(new THREE.Mesh(new THREE.BoxGeometry(12,8,12),new THREE.MeshBasicMaterial({color:0x5e5146,side:THREE.BackSide})));
+  const pnl=(w,h,x,y,z,rx,ry,i,c)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:new THREE.Color(c||0xffffff).multiplyScalar(i),side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.set(rx,ry,0);es.add(m);};
+  pnl(6,5,0,3.9,0,Math.PI/2,0,3.2);pnl(1.6,5,-5.8,1,0,0,Math.PI/2,2.4);pnl(1.6,5,5.8,1,1,0,-Math.PI/2,1.6,0xffe2c0);pnl(5,2.5,0,1.2,5.8,0,Math.PI,1.4);pnl(12,12,0,-3.9,0,-Math.PI/2,0,.45,0xd9b48a);
+  scene.environment=pm.fromScene(es,.04).texture;})();
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(8,8),new THREE.ShadowMaterial({opacity:.22}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
 // soft ground shadow
 const shCan=document.createElement('canvas');shCan.width=shCan.height=128;{const g=shCan.getContext('2d');
  const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(90,55,25,.35)');gr.addColorStop(1,'rgba(90,55,25,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);}
@@ -221,9 +263,46 @@ const shadow=new THREE.Mesh(new THREE.PlaneGeometry(4,2.4),new THREE.MeshBasicMa
 shadow.rotation.x=-Math.PI/2;scene.add(shadow);
 
 const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
-const matC={};function mat(col,r=.6,extra){const k=col+r+(extra?'x':'');if(!matC[k])matC[k]=new THREE.MeshStandardMaterial(Object.assign({color:col,roughness:r,metalness:0},extra||{}));return matC[k];}
-function tex(draw,w=256,h=256){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);
-  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;}
+function tex(draw,w=256,h=256,lin){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;if(!lin)t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
+const noiseTex=tex((g,w,h)=>{const d=g.createImageData(w,h);for(let i=0;i<w*h;i++){const v=110+Math.random()*120;d.data[i*4]=d.data[i*4+1]=d.data[i*4+2]=v;d.data[i*4+3]=255;}g.putImageData(d,0,0);
+  for(let i=0;i<260;i++){g.fillStyle=`rgba(${Math.random()<.5?0:255},${Math.random()<.5?0:255},${Math.random()<.5?0:255},.0)`;}
+  for(let i=0;i<180;i++){const v=Math.random()<.5?40:220;g.fillStyle=`rgba(${v},${v},${v},.25)`;g.beginPath();g.arc(rnd(0,w),rnd(0,h),rnd(2,9),0,7);g.fill();}},256,256,true);
+const matC={};function mat(col,r=.6,extra){const k=col+r+(extra?JSON.stringify(Object.keys(extra))+(extra.bumpScale||''):'');
+  if(!matC[k])matC[k]=new THREE.MeshStandardMaterial(Object.assign({color:col,roughness:r,metalness:0,bumpMap:noiseTex,bumpScale:.012,envMapIntensity:.9},extra||{}));return matC[k];}
+function gloss(col,r=.12,extra){const k='g'+col+r+(extra?JSON.stringify(extra):'');if(!matC[k])matC[k]=new THREE.MeshPhysicalMaterial(Object.assign({color:col,roughness:r,metalness:0,clearcoat:.9,clearcoatRoughness:.08,envMapIntensity:1.1},extra||{}));return matC[k];}
+const TXC={};function T(name,draw){return TXC[name]||(TXC[name]=tex(draw));}
+function bubbles(g,w,h,n,c1,c2,rmax){for(let i=0;i<n;i++){const x=rnd(0,w),y=rnd(0,h),r=rnd(.6,rmax||3);g.fillStyle=Math.random()<.5?c1:c2;g.beginPath();g.arc(x,y,r,0,7);g.fill();}}
+function radial(g,w,h,c0,c1){const gr=g.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);gr.addColorStop(0,c0);gr.addColorStop(1,c1);g.fillStyle=gr;g.fillRect(0,0,w,h);}
+const TOPS={
+ foam:()=>T('foam',(g,w,h)=>{radial(g,w,h,'#f6ecdc','#c99a6a');bubbles(g,w,h,900,'rgba(255,255,255,.55)','rgba(170,120,70,.18)',2.4);}),
+ cocoaFoam:()=>T('cocoaFoam',(g,w,h)=>{radial(g,w,h,'#f4e8d6','#b88456');bubbles(g,w,h,700,'rgba(255,255,255,.5)','rgba(170,120,70,.2)',2.2);bubbles(g,w,h,1400,'rgba(90,50,25,.55)','rgba(120,70,35,.4)',1.3);}),
+ matchaFoam:()=>T('matchaFoam',(g,w,h)=>{radial(g,w,h,'#e2edc2','#8fb050');bubbles(g,w,h,900,'rgba(255,255,255,.45)','rgba(90,130,40,.35)',2);}),
+ crema:()=>T('crema',(g,w,h)=>{radial(g,w,h,'#d9a060','#6e3a18');for(let i=0;i<300;i++){g.strokeStyle=`rgba(${Math.random()<.5?'90,45,15':'240,190,120'},.25)`;g.lineWidth=rnd(1,3);const a=rnd(0,7),r=rnd(10,120);g.beginPath();g.arc(w/2,h/2,r,a,a+rnd(.1,.5));g.stroke();}bubbles(g,w,h,300,'rgba(255,220,170,.4)','rgba(80,40,15,.3)',1.6);}),
+ turkish:()=>T('turkish',(g,w,h)=>{radial(g,w,h,'#9a6a40','#4a2a14');bubbles(g,w,h,1200,'rgba(190,140,90,.5)','rgba(50,25,10,.4)',2.6);}),
+ frappe:()=>T('frappe',(g,w,h)=>{g.fillStyle='#d9bfa0';g.fillRect(0,0,w,h);bubbles(g,w,h,1500,'rgba(255,255,255,.45)','rgba(120,80,50,.25)',2.5);}),
+ art:()=>T('art',(g,w,h)=>{radial(g,w,h,'#c08850','#7a4520');g.fillStyle='#f8f0e2';
+   g.beginPath();g.ellipse(w/2,h*.47,w*.3,h*.27,0,0,7);g.fill();
+   g.fillStyle='#c08850';for(let k=0;k<5;k++){g.beginPath();g.ellipse(w/2,h*(.3+k*.085),w*(.26-k*.035),h*.022,0,0,7);g.fill();}
+   g.strokeStyle='#c08850';g.lineWidth=5;g.beginPath();g.moveTo(w/2,h*.2);g.lineTo(w/2,h*.78);g.stroke();
+   g.fillStyle='#f8f0e2';g.beginPath();g.arc(w/2,h*.22,w*.06,0,7);g.fill();bubbles(g,w,h,500,'rgba(255,255,255,.3)','rgba(90,50,20,.2)',1.6);}),
+};
+const SLICE={
+ lime:()=>T('lime',(g,w,h)=>{g.fillStyle='#5f9a2a';g.fillRect(0,0,w,h);g.fillStyle='#f4f7d8';g.beginPath();g.arc(w/2,h/2,w*.46,0,7);g.fill();
+   for(let k=0;k<10;k++){const a0=k/10*Math.PI*2+.04,a1=(k+1)/10*Math.PI*2-.04;g.fillStyle=pick(['#c9e06a','#bcd85a','#d2e77c']);g.beginPath();g.moveTo(w/2,h/2);g.arc(w/2,h/2,w*.41,a0,a1);g.closePath();g.fill();}
+   bubbles(g,w,h,160,'rgba(255,255,230,.5)','rgba(150,190,40,.4)',2);g.fillStyle='#f4f7d8';g.beginPath();g.arc(w/2,h/2,w*.05,0,7);g.fill();}),
+ tomato:()=>T('tomato',(g,w,h)=>{g.fillStyle='#c8231b';g.fillRect(0,0,w,h);g.fillStyle='#e0473a';g.beginPath();g.arc(w/2,h/2,w*.44,0,7);g.fill();
+   for(let k=0;k<4;k++){const a=k/4*Math.PI*2;g.fillStyle='#f08a5a';g.beginPath();g.ellipse(w/2+Math.cos(a)*w*.22,h/2+Math.sin(a)*h*.22,w*.12,h*.09,a,0,7);g.fill();
+   for(let q=0;q<6;q++){g.fillStyle='#f6d58a';g.beginPath();g.ellipse(w/2+Math.cos(a)*w*.22+rnd(-12,12),h/2+Math.sin(a)*h*.22+rnd(-8,8),3,5,rnd(0,3),0,7);g.fill();}}}),
+ pickle:()=>T('pickle',(g,w,h)=>{g.fillStyle='#3f6b1e';g.fillRect(0,0,w,h);g.fillStyle='#b6c96a';g.beginPath();g.arc(w/2,h/2,w*.44,0,7);g.fill();
+   g.fillStyle='#d4dc94';g.beginPath();g.arc(w/2,h/2,w*.22,0,7);g.fill();for(let k=0;k<9;k++){const a=k/9*7;g.fillStyle='#eef0c0';g.beginPath();g.ellipse(w/2+Math.cos(a)*w*.13,h/2+Math.sin(a)*h*.13,6,3,a,0,7);g.fill();}}),
+ sujuk:()=>T('sujuk',(g,w,h)=>{g.fillStyle='#5a1a10';g.fillRect(0,0,w,h);g.fillStyle='#8a2c1c';g.beginPath();g.arc(w/2,h/2,w*.45,0,7);g.fill();bubbles(g,w,h,220,'rgba(240,200,170,.8)','rgba(60,15,8,.6)',4);}),
+ berryskin:()=>T('straw',(g,w,h)=>{g.fillStyle='#c8202a';g.fillRect(0,0,w,h);for(let y=6;y<h;y+=14)for(let x=(y/14%2)*8;x<w;x+=16){g.fillStyle='#f3d36b';g.beginPath();g.ellipse(x,y,2,3,0,0,7);g.fill();}}),
+ fry:()=>T('fry',(g,w,h)=>{g.fillStyle='#f0c25a';g.fillRect(0,0,w,h);bubbles(g,w,h,500,'rgba(255,230,160,.6)','rgba(170,110,30,.35)',3);}),
+};
+function sliceMats(name,rind){const k='sl'+name;if(!matC[k]){const cap=new THREE.MeshPhysicalMaterial({map:SLICE[name](),roughness:.35,clearcoat:.5,clearcoatRoughness:.2,bumpMap:noiseTex,bumpScale:.01});
+  matC[k]=[mat(rind,.45),cap,cap];}return matC[k];}
+function roundBox(sz,k){const g=new THREE.BoxGeometry(sz,sz,sz,4,4,4),p=g.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);const l=v.length();const n=v.clone().normalize().multiplyScalar(sz*.62);v.lerp(n,k);p.setXYZ(i,v.x,v.y,v.z);}g.computeVertexNormals();return g;}
 const pitaTex=tex((g,w,h)=>{g.fillStyle='#efd8a8';g.fillRect(0,0,w,h);for(let i=0;i<70;i++){const x=rnd(0,w),y=rnd(0,h),r=rnd(3,14);
   const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,`rgba(${rnd(120,170)|0},${rnd(70,100)|0},30,${rnd(.35,.7)})`);gr.addColorStop(1,'rgba(150,90,30,0)');g.fillStyle=gr;g.beginPath();g.arc(x,y,r,0,7);g.fill();}});
 const crepeTex=tex((g,w,h)=>{g.fillStyle='#dcaa5c';g.fillRect(0,0,w,h);for(let i=0;i<120;i++){g.fillStyle=`rgba(120,70,20,${rnd(.1,.35)})`;g.beginPath();g.arc(rnd(0,w),rnd(0,h),rnd(1,4),0,7);g.fill();}
@@ -234,8 +313,9 @@ const kraft=(band)=>tex((g,w,h)=>{g.fillStyle='#caa274';g.fillRect(0,0,w,h);for(
 const bagTex=kraft(true),boxTex=kraft(false);
 
 /* ---------- drink shells ---------- */
-const glassMat=new THREE.MeshStandardMaterial({color:0xeaf6ff,transparent:true,opacity:.2,roughness:.05,metalness:0,side:THREE.DoubleSide,depthWrite:false});
-const glassMat2=new THREE.MeshStandardMaterial({color:0xeaf6ff,transparent:true,opacity:.38,roughness:.05,depthWrite:false});
+const glassMat=new THREE.MeshPhysicalMaterial({color:0xf4fbff,transparent:true,opacity:.16,roughness:.03,metalness:0,clearcoat:1,clearcoatRoughness:.03,envMapIntensity:2.4,side:THREE.DoubleSide,depthWrite:false});
+const glassMat2=new THREE.MeshPhysicalMaterial({color:0xf4fbff,transparent:true,opacity:.35,roughness:.03,clearcoat:1,envMapIntensity:2.4,depthWrite:false});
+const ceramic=()=>matC.cer||(matC.cer=new THREE.MeshPhysicalMaterial({color:'#fbfaf7',roughness:.22,clearcoat:1,clearcoatRoughness:.06,side:THREE.DoubleSide,envMapIntensity:1}));
 function circFp(r){return ()=>{const a=rnd(0,7),d=Math.sqrt(Math.random())*r;return [Math.cos(a)*d,Math.sin(a)*d,.04]}}
 function tumbler(g,rt,rb,h,y0off,opaqueMat){
   const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,48,1,true),opaqueMat||glassMat);m.renderOrder=2;g.add(m);
@@ -243,19 +323,20 @@ function tumbler(g,rt,rb,h,y0off,opaqueMat){
   const rim=new THREE.Mesh(new THREE.TorusGeometry(rt,.012,8,48),opaqueMat||glassMat2);rim.rotation.x=Math.PI/2;rim.position.y=h/2;g.add(rim);
   const y0=-h/2+.06;return {Rat:y=>rb+(rt-rb)*Math.min(1,Math.max(0,(y+h/2)/h)),y0,h:h-.08,W:rt,D:rt,R:rt,fp:circFp(rb*.72),bottom:-h/2,sideY:0,top:h/2};
 }
-function saucer(g,r,y){const s=new THREE.Mesh(new THREE.CylinderGeometry(r,r*.8,.06,48),mat('#fbf3ee',.35));s.position.y=y;g.add(s);
-  const r2=new THREE.Mesh(new THREE.TorusGeometry(r*.98,.02,8,48),mat('#e0568f',.4));r2.rotation.x=Math.PI/2;r2.position.y=y+.03;g.add(r2);}
+function saucer(g,r,y){const s=new THREE.Mesh(new THREE.CylinderGeometry(r,r*.8,.06,56),ceramic());s.position.y=y;g.add(s);
+  const r2=new THREE.Mesh(new THREE.TorusGeometry(r*.98,.022,10,56),ceramic());r2.rotation.x=Math.PI/2;r2.position.y=y+.03;g.add(r2);}
+function handle(g,r,t,x,y,m){const hd=new THREE.Mesh(new THREE.TorusGeometry(r,t,14,28,Math.PI*1.25),m);hd.position.set(x,y,0);hd.rotation.z=-Math.PI*.62;g.add(hd);}
 const DRINK={
-  glass:g=>tumbler(g,.46,.38,1.5),
+  glass:g=>Object.assign(tumbler(g,.46,.38,1.5),{fill:.86}),
   jar:g=>{const c=tumbler(g,.5,.48,1.3);[.6,.52].forEach(y=>{const t=new THREE.Mesh(new THREE.TorusGeometry(.5,.03,8,48),glassMat2);t.rotation.x=Math.PI/2;t.position.y=y;g.add(t)});
     const st=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,1.9,10),mat('#e0568f',.4));st.position.set(.15,.45,0);st.rotation.z=-.22;g.add(st);return c;},
-  cup:g=>{const c=tumbler(g,.5,.36,1.5);
+  cup:g=>{const c=tumbler(g,.5,.36,1.5);c.fill=.72;
     const dome=new THREE.Mesh(new THREE.SphereGeometry(.5,40,16,0,Math.PI*2,0,Math.PI/2),glassMat);dome.position.y=.75;dome.renderOrder=3;g.add(dome);
     const st=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,2.2,10),mat('#3a2016',.4));st.position.set(.1,.55,0);st.rotation.z=-.12;g.add(st);return c;},
-  mug:g=>{const cer=mat('#ffffff',.3,{side:THREE.DoubleSide});const c=tumbler(g,.5,.38,.75,0,cer);
-    const band=new THREE.Mesh(new THREE.CylinderGeometry(.47,.42,.16,48,1,true),mat('#e0568f',.35,{side:THREE.DoubleSide}));band.position.y=-.05;band.scale.setScalar(1.02);g.add(band);
-    const hd=new THREE.Mesh(new THREE.TorusGeometry(.18,.05,12,24,Math.PI*1.25),cer);hd.position.set(.55,.0,0);hd.rotation.z=-Math.PI*.62;g.add(hd);
-    saucer(g,.85,-.4);c.W=.85;c.bottom=-.43;return c;},
+  mug:g=>{const c=tumbler(g,.5,.38,.75,0,ceramic());handle(g,.18,.05,.55,0,ceramic());saucer(g,.85,-.4);c.W=.85;c.bottom=-.43;c.fill=.88;return c;},
+  demi:g=>{const c=tumbler(g,.3,.23,.42,0,ceramic());handle(g,.1,.03,.33,0,ceramic());saucer(g,.55,-.24);c.W=.55;c.bottom=-.27;c.fill=.85;return c;},
+  latteGlass:g=>{const c=tumbler(g,.36,.31,1.15);handle(g,.17,.035,.4,.05,glassMat2);saucer(g,.62,-.6);c.W=.62;c.bottom=-.63;c.fill=.9;return c;},
+  cupFlat:g=>{const c=tumbler(g,.5,.36,1.5);const st=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,2.1,10),gloss('#222222',.3));st.position.set(.1,.45,0);st.rotation.z=-.14;g.add(st);c.fill=.86;return c;},
   teaGlass:g=>{const c=tumbler(g,.34,.28,.85);saucer(g,.6,-.45);c.W=.6;c.bottom=-.48;return c;},
   plate:g=>{const pl=new THREE.Mesh(new THREE.CylinderGeometry(1.15,.9,.06,56),mat('#ffffff',.3));pl.position.y=-.03;g.add(pl);
     const r=new THREE.Mesh(new THREE.TorusGeometry(1.12,.025,8,56),mat('#f0e6dc',.3));r.rotation.x=Math.PI/2;g.add(r);
@@ -308,7 +389,7 @@ function crispyGeo(r){const g=new THREE.IcosahedronGeometry(r,2);const p=g.attri
 function drizzle(ctx,col,o={}){
   const pts=[],W=ctx.W*(o.w||.8),D=ctx.D*.45,n=o.n||9;
   for(let k=0;k<n;k++){const x=-W+2*W*k/(n-1);pts.push(new THREE.Vector3(x+rnd(-.05,.05),rnd(-.02,.02),(k%2?1:-1)*D*rnd(.6,1)));}
-  const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),120,o.r||.032,8,false),mat(col,.3));
+  const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),120,o.r||.032,8,false),gloss(col,.12));
   if(ctx.type==='crepe'){m.position.x=.25;m.scale.set(.75,1,.8);}
   const L=new THREE.Group();m.userData.cy=ctx.top;m.userData.ey=0;L.add(m);
   if(o.second){const m2=m.clone();m2.rotation.y=Math.PI/2.6;m2.scale.multiplyScalar(.8);L.add(m2);}
@@ -322,13 +403,13 @@ function cup(col,side){
   [c,b,s].forEach(m=>L.add(m));L.userData.side=side;return L;
 }
 const ING={
- fries:ctx=>ctx.bag?scatter(ctx,30,()=>{const m=new THREE.Mesh(geo('fryV',()=>new THREE.BoxGeometry(.075,.85,.075)),mat(pick(['#f2c14e','#eab03c','#f5cd62']),.7));return m},{cy:undefined,keepRot:false})
-   :scatter(ctx,ctx.type==='box'?34:24,()=>{const m=new THREE.Mesh(geo('fry',()=>new THREE.BoxGeometry(.6,.07,.07)),mat(pick(['#f2c14e','#eab03c','#f5cd62']),.7));return m}),
+ fries:ctx=>ctx.bag?scatter(ctx,30,()=>{const m=new THREE.Mesh(geo('fryV',()=>new THREE.BoxGeometry(.075,.85,.075,1,6,1)),mat(pick(['#ffffff','#f6e2b6','#ffeccc']),.55,{map:SLICE.fry()}));return m},{cy:undefined,keepRot:false})
+   :scatter(ctx,ctx.type==='box'?34:24,()=>{const m=new THREE.Mesh(geo('fry',()=>new THREE.BoxGeometry(.6,.07,.07,6,1,1)),mat(pick(['#ffffff','#f6e2b6','#ffeccc']),.55,{map:SLICE.fry()}));return m}),
  spices:ctx=>scatter(ctx,60,()=>new THREE.Mesh(geo('spk',()=>new THREE.TetrahedronGeometry(.025)),mat(pick(['#c0452a','#9b5a1a','#3b8d2f']))),{cy:ctx.top}),
  parsley:ctx=>scatter(ctx,45,()=>new THREE.Mesh(geo('pars',()=>new THREE.TetrahedronGeometry(.04)),mat(pick(['#3b8d2f','#4fa23a','#2f7a26']))),{cy:ctx.top}),
  sumac:ctx=>scatter(ctx,60,()=>new THREE.Mesh(geo('spk',()=>new THREE.TetrahedronGeometry(.025)),mat('#7b1e2b')),{cy:ctx.top+.02}),
  ketchupCup:()=>cup('#c3241a',1),mayoCup:()=>cup('#efe2bf',-1),bbqCup:()=>cup('#5a1e10',1),dreamsCup:()=>cup('#eccb8e',-1),
- cheddar:ctx=>{const L=new THREE.Group();const m=new THREE.Mesh(geo('blob',()=>new THREE.SphereGeometry(1,32,16)),mat('#f6a21e',.3));
+ cheddar:ctx=>{const L=new THREE.Group();const m=new THREE.Mesh(geo('blob',()=>new THREE.SphereGeometry(1,32,16)),gloss('#f6a21e',.15));
    m.scale.set(ctx.W*.8,.13,ctx.D*.8);m.userData.cy=ctx.top-.02;m.userData.ey=0;L.add(m);
    for(let i=0;i<7;i++){const a=rnd(0,7),len=rnd(.15,.38);const d=new THREE.Mesh(geo('drip',()=>{const g=new THREE.CylinderGeometry(.045,.03,1,10);g.translate(0,-.5,0);return g}),mat('#f6a21e',.3));
      d.scale.y=len;d.position.set(Math.cos(a)*ctx.W*.7,0,Math.sin(a)*ctx.D*.7);d.userData.cy=ctx.top-.02;d.userData.ey=0;L.add(d);}
@@ -337,8 +418,8 @@ const ING={
  bbq:ctx=>drizzle(ctx,'#5a1e10',{second:ctx.type!=='wrap'}),
  ketchup:ctx=>drizzle(ctx,'#c3241a'),mayo:ctx=>drizzle(ctx,'#efe2bf',{n:11}),dreams:ctx=>drizzle(ctx,'#eccb8e',{n:12,second:true}),
  spicy:ctx=>drizzle(ctx,'#e2531f',{n:10}),toum:ctx=>drizzle(ctx,'#f6f1e1',{r:.04,second:true}),tahini:ctx=>drizzle(ctx,'#d9c39a',{r:.04,second:true}),
- crispy:ctx=>scatter(ctx,ctx.type==='box'?9:8,()=>{const m=new THREE.Mesh(geo('cr',()=>crispyGeo(.18)),mat(pick(['#c9772e','#b8651f','#d48a3a']),.85));m.scale.setScalar(rnd(.75,1.15));return m},{ej:.04}),
- crispySpicy:ctx=>scatter(ctx,8,()=>{const m=new THREE.Mesh(geo('cr',()=>crispyGeo(.18)),mat(pick(['#b8461f','#a63a17','#c45624']),.85));m.scale.setScalar(rnd(.75,1.1));return m}),
+ crispy:ctx=>scatter(ctx,ctx.type==='box'?9:8,()=>{const m=new THREE.Mesh(geo('cr',()=>crispyGeo(.18)),mat(pick(['#c9772e','#b8651f','#d48a3a']),.75,{bumpScale:.06}));m.scale.setScalar(rnd(.75,1.15));return m},{ej:.04}),
+ crispySpicy:ctx=>scatter(ctx,8,()=>{const m=new THREE.Mesh(geo('cr',()=>crispyGeo(.18)),mat(pick(['#b8461f','#a63a17','#c45624']),.75,{bumpScale:.06}));m.scale.setScalar(rnd(.75,1.1));return m}),
  chicken:ctx=>scatter(ctx,18,()=>new THREE.Mesh(geo('strip',()=>new THREE.BoxGeometry(.34,.06,.1)),mat(pick(['#e8c79a','#d9ac72','#c99a62']),.7))),
  fajita:ctx=>scatter(ctx,18,()=>new THREE.Mesh(geo('faj',()=>new THREE.BoxGeometry(.3,.07,.09)),mat(pick(['#d58a3c','#c0702a','#e0a050']),.7))),
  shish:ctx=>scatter(ctx,13,()=>new THREE.Mesh(geo('cube',()=>new THREE.BoxGeometry(.19,.17,.19)),mat(pick(['#d38b45','#c07535','#a8602a']),.8))),
@@ -349,37 +430,46 @@ const ING={
  kofta:ctx=>{const L=new THREE.Group();for(let s=0;s<2;s++){const z=s?.14:-.14;
    const st=new THREE.Mesh(geo('stick',()=>new THREE.CylinderGeometry(.014,.014,2.3,6)),mat('#d9c4a0'));st.rotation.z=Math.PI/2;st.position.z=z;st.userData.cy=-.05;st.userData.ey=0;L.add(st);
    const k=new THREE.Mesh(geo('kof',()=>{const g=new THREE.SphereGeometry(.15,20,12);g.scale(5,1,1);return g}),mat('#5a3220',.9));k.position.z=z;k.userData.cy=-.05;k.userData.ey=0;L.add(k);}return L;},
- sujuk:ctx=>scatter(ctx,16,()=>{const m=new THREE.Mesh(geo('suj',()=>new THREE.CylinderGeometry(.1,.1,.06,18)),mat(pick(['#7a2a1d','#8c3324']),.6));return m}),
+ sujuk:ctx=>scatter(ctx,16,()=>{const m=new THREE.Mesh(geo('suj',()=>new THREE.CylinderGeometry(.1,.1,.06,24)),sliceMats('sujuk','#4a160c'));return m}),
  minced:ctx=>scatter(ctx,80,()=>new THREE.Mesh(geo('mince',()=>new THREE.DodecahedronGeometry(.05)),mat(pick(['#5b3a24','#6b4429','#4a2e1b']),.9)),{cy:ctx.cy0?.1:undefined}),
- peppers:ctx=>scatter(ctx,16,()=>new THREE.Mesh(geo('pep',()=>new THREE.TorusGeometry(.11,.028,6,14,Math.PI*1.1)),mat(pick(['#d8342b','#f2c230','#3f9b3a']),.45))),
- olives:ctx=>scatter(ctx,10,()=>new THREE.Mesh(geo('olv',()=>new THREE.TorusGeometry(.055,.032,10,18)),mat('#1d1d1d',.35)),{cy:undefined}),
- pickles:ctx=>scatter(ctx,11,()=>new THREE.Mesh(geo('pick',()=>new THREE.CylinderGeometry(.09,.09,.03,16)),mat(pick(['#86b04a','#9cc25a']),.5))),
- tomato:ctx=>scatter(ctx,8,()=>new THREE.Mesh(geo('tom',()=>new THREE.CylinderGeometry(.12,.12,.035,18)),mat('#d8392b',.45))),
+ peppers:ctx=>scatter(ctx,16,()=>new THREE.Mesh(geo('pep',()=>new THREE.TorusGeometry(.11,.028,6,14,Math.PI*1.1)),gloss(pick(['#d8342b','#f2c230','#3f9b3a']),.2))),
+ olives:ctx=>scatter(ctx,10,()=>new THREE.Mesh(geo('olv',()=>new THREE.TorusGeometry(.055,.032,12,20)),gloss('#1d1d1d',.25)),{cy:undefined}),
+ pickles:ctx=>scatter(ctx,11,()=>new THREE.Mesh(geo('pick',()=>new THREE.CylinderGeometry(.09,.09,.03,24)),sliceMats('pickle','#3f6b1e'))),
+ tomato:ctx=>scatter(ctx,8,()=>new THREE.Mesh(geo('tom',()=>new THREE.CylinderGeometry(.12,.12,.035,24)),sliceMats('tomato','#c8231b'))),
  grilledOnion:ctx=>scatter(ctx,10,()=>new THREE.Mesh(geo('oni',()=>new THREE.TorusGeometry(.13,.017,6,22,Math.PI*1.3)),mat(pick(['#c9955c','#d8b07a','#b47aa5']),.6))),
  mozz:ctx=>scatter(ctx,34,()=>new THREE.Mesh(geo('moz',()=>new THREE.BoxGeometry(.16,.022,.05)),mat(pick(['#fff4d6','#f3e7c4']),.5))),
  kabutsha:ctx=>scatter(ctx,40,()=>new THREE.Mesh(geo('kab',()=>new THREE.BoxGeometry(.2,.016,.022)),mat(pick(['#8e3b8a','#a64ea1','#f1ecdf']),.6))),
  mixedVeg:ctx=>scatter(ctx,26,()=>new THREE.Mesh(geo('veg',()=>new THREE.BoxGeometry(.07,.07,.07)),mat(pick(['#7cb342','#f2c230','#e67e22','#d8342b']),.55))),
  jalapeno:ctx=>scatter(ctx,10,()=>new THREE.Mesh(geo('jal',()=>new THREE.TorusGeometry(.085,.035,8,16)),mat(pick(['#3c8d2f','#4ca33a']),.4))),
  liquid:(ctx,s)=>{const L=new THREE.Group();const y=ctx.y0+s.at*ctx.h;
-   const g=new THREE.CylinderGeometry(ctx.Rat(y+s.h/2)*.95,ctx.Rat(y-s.h/2)*.95,s.h,40);
-   const m=new THREE.Mesh(g,s.op?new THREE.MeshStandardMaterial({color:s.col,roughness:.2,transparent:true,opacity:s.op,depthWrite:false}):mat(s.col,.25));
+   const g=new THREE.CylinderGeometry(ctx.Rat(y+s.h/2)*.95,ctx.Rat(y-s.h/2)*.95,s.h,56);
+   const side=new THREE.MeshPhysicalMaterial({color:s.col,roughness:.18,clearcoat:.7,clearcoatRoughness:.1,transparent:!!s.op,opacity:s.op||1,depthWrite:!s.op,envMapIntensity:1});
+   const top=s.top&&TOPS[s.top]?new THREE.MeshPhysicalMaterial({map:TOPS[s.top](),roughness:.55,clearcoat:.3,bumpMap:noiseTex,bumpScale:.006,transparent:!!s.op,opacity:s.op||1}):side;
+   const m=new THREE.Mesh(g,[side,top,side]);
    m.userData.cy=0;m.userData.ey=0;L.add(m);return L;},
  wedge:(ctx,s)=>{const L=new THREE.Group();const g=new THREE.CylinderGeometry(.95,.95,s.h,40,1,false,Math.PI/2-WEDGE/2,WEDGE);g.translate(-.45,0,0);
    const m=new THREE.Mesh(g,mat(s.col,s.col==='#c8202a'?.2:.7));m.userData.cy=0;m.userData.ey=0;L.add(m);return L;},
  fruit:(ctx,s)=>scatter(ctx,s.big?11:16,()=>new THREE.Mesh(geo(s.big?'fbig':'fsm',()=>new THREE.BoxGeometry(s.big?.15:.1,s.big?.13:.09,s.big?.15:.1)),mat(pick(s.cols),.45)),{spread:s.spread||.04}),
  mint:(ctx,s)=>scatter(ctx,7,()=>{const m=new THREE.Mesh(geo('leaf',()=>{const g=new THREE.SphereGeometry(.1,12,8);g.scale(1,.16,.55);return g}),mat(pick(['#3b8d2f','#4fa23a']),.5));return m},{spread:s.spread||.05}),
- lime:(ctx,s)=>scatter(ctx,3,()=>{const m=new THREE.Mesh(geo('lime',()=>new THREE.CylinderGeometry(.16,.16,.035,22)),mat(pick(['#a8d34a','#c5e36a']),.4));m.rotation.x=Math.PI/2;return m},{spread:s.spread||.04}),
- ice:(ctx,s)=>scatter(ctx,7,()=>new THREE.Mesh(geo('ice',()=>new THREE.BoxGeometry(.17,.17,.17)),new THREE.MeshStandardMaterial({color:0xe6f6ff,transparent:true,opacity:.6,roughness:.05})),{spread:s.spread||.05}),
+ lime:(ctx,s)=>scatter(ctx,3,()=>{const m=new THREE.Mesh(geo('lime',()=>new THREE.CylinderGeometry(.16,.16,.035,32)),sliceMats('lime','#5f9a2a'));m.rotation.x=Math.PI/2;return m},{spread:s.spread||.04}),
+ ice:(ctx,s)=>scatter(ctx,s.pos==='in'?8:7,()=>new THREE.Mesh(geo('ice',()=>roundBox(.17,.3)),matC.ice||(matC.ice=new THREE.MeshPhysicalMaterial({color:0xd6ecfa,transparent:true,opacity:.6,roughness:.04,clearcoat:1,envMapIntensity:2.2,depthWrite:false}))),{spread:s.spread||.05}),
+ hatch:(ctx,s)=>{const L=new THREE.Group();const r=ctx.Rat(ctx.y0+ctx.h)*.85;for(let d=0;d<2;d++)for(let k=-2;k<=2;k++){const off=k*r*.32;const len=Math.sqrt(Math.max(.01,r*r-off*off))*2;
+   const m=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,len,8),gloss(s.col||'#b8691f',.15));m.rotation.z=Math.PI/2;if(d)m.rotation.y=Math.PI/2;
+   m.position.set(d?off:0,0,d?0:off);if(d){m.position.set(off,0,0);m.rotation.set(Math.PI/2,0,0);}m.userData.cy=0;m.userData.ey=0;L.add(m);}return L;},
+ crumbs:(ctx,s)=>scatter(ctx,45,()=>new THREE.Mesh(geo('crumb',()=>new THREE.DodecahedronGeometry(.035)),mat(pick(['#b5702e','#c9853d','#9a5a22']),.8)),{spread:.03}),
+ coconut:(ctx,s)=>scatter(ctx,40,()=>new THREE.Mesh(geo('coco',()=>new THREE.BoxGeometry(.13,.014,.035)),mat('#f3ede0',.6)),{spread:.03}),
+ hazel:(ctx,s)=>scatter(ctx,14,()=>new THREE.Mesh(geo('hz',()=>new THREE.DodecahedronGeometry(.04,1)),mat(pick(['#a8743f','#c79a62']),.6)),{spread:.02}),
+ cocoa:(ctx,s)=>scatter(ctx,120,()=>new THREE.Mesh(geo('coc',()=>new THREE.TetrahedronGeometry(.012)),mat('#4a2412',.9)),{spread:.01}),
  bubbles:(ctx,s)=>scatter(ctx,30,()=>new THREE.Mesh(geo('bub',()=>new THREE.SphereGeometry(.028,8,6)),new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.55,roughness:.1})),{spread:s.spread||.05}),
  berries:(ctx,s)=>scatter(ctx,9,()=>new THREE.Mesh(geo('berry',()=>new THREE.SphereGeometry(.065,14,10)),mat(pick(['#2e2f6e','#3a1f3d','#24254f']),.35)),{spread:.03}),
  strawberry:(ctx,s)=>scatter(ctx,ctx.plate?2:3,()=>{const g=new THREE.Group();
-   const b=new THREE.Mesh(geo('stb',()=>{const c=new THREE.ConeGeometry(.11,.22,14);c.rotateX(Math.PI);return c}),mat('#d42a2a',.35));
+   const b=new THREE.Mesh(geo('stb',()=>{const c=new THREE.ConeGeometry(.11,.22,14);c.rotateX(Math.PI);return c}),new THREE.MeshPhysicalMaterial({map:SLICE.berryskin(),roughness:.3,clearcoat:.8}));
    const l=new THREE.Mesh(geo('stl',()=>new THREE.ConeGeometry(.08,.05,6)),mat('#3b8d2f'));l.position.y=.12;g.add(b);g.add(l);return g},{spread:s.spread||.03}),
- cream:(ctx,s)=>{const L=new THREE.Group();for(let i=0;i<4;i++){const t=new THREE.Mesh(geo('cr'+i,()=>new THREE.TorusGeometry(.34-i*.08,.1-i*.012,12,32)),mat('#fffaf0',.55));
+ cream:(ctx,s)=>{const L=new THREE.Group();for(let i=0;i<4;i++){const t=new THREE.Mesh(geo('cr'+i,()=>new THREE.TorusGeometry(.34-i*.08,.1-i*.012,12,32)),mat('#fffaf0',.6,{bumpScale:.03}));
    t.rotation.x=Math.PI/2;t.position.y=i*.11;t.userData.cy=i*.11;t.userData.ey=i*.06;L.add(t);}
    const tip=new THREE.Mesh(geo('crt',()=>new THREE.ConeGeometry(.08,.16,12)),mat('#fffaf0',.55));tip.userData.cy=.48;tip.userData.ey=.26;L.add(tip);return L;},
  spiral:(ctx,s)=>{const pts=[];for(let k=0;k<=60;k++){const t=k/60,a=t*Math.PI*6,r=.38*(1-t)+.04;pts.push(new THREE.Vector3(Math.cos(a)*r,t*.42,Math.sin(a)*r));}
-   const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),160,.022,6),mat(s.col,.3));m.userData.cy=-.22;m.userData.ey=-.15;const L=new THREE.Group();L.add(m);return L;},
+   const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),160,.022,6),mat(s.col,.3));m.material=gloss(s.col,.1);m.userData.cy=s.pos?0:-.22;m.userData.ey=s.pos?0:-.15;const L=new THREE.Group();L.add(m);return L;},
  wafer:(ctx,s)=>{const L=new THREE.Group();[[-.1,.25],[.12,-.3]].forEach(([x,r])=>{const w=new THREE.Mesh(geo('waf',()=>new THREE.CylinderGeometry(.04,.04,.55,10)),mat('#b9823f',.6));
    w.position.set(x,.1,0);w.rotation.z=r;w.userData.cy=.1;w.userData.ey=0;L.add(w);});
    const o=new THREE.Mesh(geo('oreo',()=>new THREE.CylinderGeometry(.12,.12,.05,24)),mat('#2a1a12',.6));o.position.set(-.25,0,.1);o.rotation.x=1.2;o.userData.cy=0;o.userData.ey=0;L.add(o);return L;},
@@ -391,17 +481,25 @@ const ING={
 let model=null,builtAt=0,dragRot=0;
 const labelsEl=document.getElementById('labels'),linesEl=document.getElementById('lines');
 function dispose(){if(!model)return;scene.remove(model.root);labelsEl.innerHTML='';linesEl.innerHTML='';}
+const TH={cream:.42,spiral:.36,hatch:.04,crumbs:.06,coconut:.05,cocoa:.03,beans:.06,hazel:.07,ice:.12};
+function autoDrink(ctx,it){const sp=it.ing.filter(x=>typeof x!=='string');if(!sp.some(x=>x.f||x.pos))return;
+  const fill=it.fill||ctx.fill||.86,fH=ctx.h*fill,liq=sp.filter(x=>x.f),sum=liq.reduce((a,x)=>a+x.f,0);
+  const hasIce=sp.some(x=>x.pos==='in');let y=0;
+  [...liq].reverse().forEach(x=>{x.h=x.f/sum*fH;x.at=(y+x.h/2)/ctx.h;y+=x.h;if(hasIce&&!x.op)x.op=.86;});
+  let top=fH-.01;[...sp.filter(x=>x.pos==='top')].reverse().forEach(x=>{x.at=top/ctx.h;top+=TH[x.k]||.06;});
+  sp.filter(x=>x.pos==='in').forEach(x=>{x.at=fH*.55/ctx.h;x.spread=fH*.36;});}
 function build(i){
   dispose();const it=ITEMS[i];const {g,ctx}=makeShell(it.shell);
+  if(ctx.drink)autoDrink(ctx,it);
   const root=new THREE.Group(),inner=new THREE.Group();root.add(inner);
   const layers=[];const n=it.ing.length;
   it.ing.forEach((raw,j)=>{const sp=typeof raw==='string'?{k:raw}:raw;const k=sp.k;const L=ING[k](ctx,sp);L.userData.key=k;L.userData.sp=sp;
     const side=L.userData.side;
     L.userData.cy=ctx.drink?ctx.y0+sp.at*ctx.h:side?ctx.sideY:ctx.cy0+(n-1-j)*ctx.stack;
-    if(ctx.drink)L.userData.h=(k==='liquid'&&sp.h>.7)||k==='cream'?1.3:(k==='wedge'&&sp.h>.3)?1.2:1;
+    if(ctx.drink)L.userData.h=(k==='liquid'&&sp.h>.7)||k==='cream'?1.3:(k==='wedge'&&sp.h>.3)?1.2:k==='liquid'&&sp.h<.12?.75:1;
     if(side){L.userData.cx=side*(ctx.W+.55);L.userData.cz=.35;}
     inner.add(L);layers.push(L);});
-  g.userData.key='_shell';g.userData.cy=0;g.userData.h={bag:2.4,box:1.5,crepe:2.1,wrap:1.9,glass:2.2,jar:2.1,cup:2.4,mug:1.5,teaGlass:1.4,plate:.8}[it.shell];inner.add(g);layers.push(g);
+  g.userData.key='_shell';g.userData.cy=0;g.userData.h={bag:2.4,box:1.5,crepe:2.1,wrap:1.9}[it.shell]||1;inner.add(g);if(!ctx.drink)layers.push(g);
   layers.forEach(L=>{if(!L.userData.h)L.userData.h=(L.userData.key==='fries'&&ctx.bag)?2.1:L.userData.side?1.1:1;});
   let cum=0;layers.forEach(L=>{L.userData.mid=cum+L.userData.h/2;cum+=L.userData.h;});
   const lab=[];
@@ -412,7 +510,9 @@ function build(i){
     const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('r','3.2');dot.setAttribute('fill','#e0568f');
     linesEl.appendChild(ln);linesEl.appendChild(dot);lab.push({d,ln,dot,w:0});});
   scene.add(root);
-  model={root,inner,layers,ctx,lab,it,total:cum,gap:Math.min(.55,4.6/cum)};
+  root.traverse(o=>{if(o.isMesh){const ms=Array.isArray(o.material)?o.material:[o.material];const tr=ms.some(m=>m.transparent);o.castShadow=!tr;o.receiveShadow=!tr;
+    ms.forEach(m=>{if(!m.userData.lin){m.userData.lin=1;if(m.color&&!m.map)m.color.convertSRGBToLinear();}});}});
+  model={root,inner,layers,ctx,lab,it,vessel:ctx.drink?g:null,total:cum,gap:Math.min(.55,4.6/cum)};
   builtAt=performance.now();dragRot=0;
 }
 
@@ -430,7 +530,7 @@ const ease=t=>{const c=1.4;t=Math.min(1,t);return 1+(c+1)*Math.pow(t-1,3)+c*Math
 const lerp=(a,b,t)=>a+(b-a)*t;
 function frame(now){
   resize();
-  const a=readScroll();if(a!==active||!model){active=a;setActive(a);build(a);}
+  let a;if(THUMB){a=ITEMS.findIndex(x=>x.id===THUMB);progress=0;}else a=readScroll();if(a!==active||!model){active=a;setActive(a);build(a);}
   const target=Math.max(0,Math.min(1,(Math.sin(progress*Math.PI)-.12)*1.7));
   eCur+=(target-eCur)*.09;const e=eCur;
   const {root,inner,layers,ctx,lab,gap}=model;const N=layers.length;
@@ -439,23 +539,25 @@ function frame(now){
     const ey=Ht/2-L.userData.mid*gap;
     L.position.y=lerp(L.userData.cy,ey,e);
     if(L.userData.side){L.position.x=lerp(L.userData.cx,0,e);L.position.z=lerp(L.userData.cz,0,e);}
-    if(j<N-1)L.children.forEach(m=>{if(m.userData.cy!==undefined)m.position.y=lerp(m.userData.cy,m.userData.ey,e);});
+    if(L.userData.key!=='_shell')L.children.forEach(m=>{if(m.userData.cy!==undefined)m.position.y=lerp(m.userData.cy,m.userData.ey,e);});
   });
+  if(model.vessel){model.vessel.visible=e<.42;model.vessel.scale.setScalar(1-e*.25);}
   if(!dragging){dragRot*=.985;dragRot+=vel;vel*=.92;}
-  const t=now/1000;
+  const t=THUMB?0:now/1000;
   inner.rotation.y=(ctx.type==='crepe'?-.35:ctx.type==='wrap'?-.2:ctx.type==='plate'?-.9:.25)+Math.sin(t*.5)*.45*(1-e*.75)+dragRot;
   inner.rotation.x=lerp(0,.08,e);
   const pop=ease((now-builtAt)/650);root.scale.setScalar(.55+.45*pop);
   // camera framing
   const tan=Math.tan(THREE.MathUtils.degToRad(camera.fov/2)),asp=W/H;const narrow=asp<1.25;
   const modelW=ctx.W*2+.5;
-  const d0=Math.max(({bag:3.3,box:2.7,glass:2.6,jar:2.6,cup:3.0,mug:2.0,teaGlass:1.9,plate:2.0}[ctx.type]||2.5)/(2*tan),(modelW+1.6)/(2*tan*asp));
+  const d0=Math.max(({bag:3.3,box:2.7,glass:2.5,jar:2.5,cup:3.0,cupFlat:2.7,mug:1.7,demi:1.15,latteGlass:2.1,teaGlass:1.7,plate:2.0}[ctx.type]||2.5)/(2*tan),(modelW+1.6)/(2*tan*asp));
   const d1=Math.max((Ht+2.3)/(2*tan),(modelW/(narrow?.52:.62))/(2*tan*asp));
-  const dist=lerp(d0,d1,e),elev=lerp(.5,.16,e);
-  camera.position.set(0,Math.sin(elev)*dist,Math.cos(elev)*dist);camera.lookAt(0,lerp(-.3,-(Ht*.02+.2),e),0);
+  const dist=THUMB?d0*(/cup/.test(ctx.type)?.92:.8):lerp(d0,d1,e),elev=THUMB?.42:lerp(.5,.16,e);
+  camera.position.set(0,Math.sin(elev)*dist,Math.cos(elev)*dist);camera.lookAt(0,THUMB?ctx.bottom*.15+(ctx.drink?.08:0):lerp(-.3,-(Ht*.02+.2),e),0);
   const visW=2*dist*tan*asp;
   root.position.x=narrow?lerp(0,visW*.2,e):0; // RTL: labels on left side on narrow screens, model to the right
-  shadow.position.set(root.position.x,lerp(ctx.bottom-.02,-Ht/2-.75,e),0);shadow.material.opacity=1-e*.5;
+  shadow.position.set(root.position.x,lerp(ctx.bottom-.02,-Ht/2-.75,e),0);shadow.material.opacity=1-e*.5;ground.position.copy(shadow.position);ground.position.y-=.005;ground.material.opacity=.22*Math.max(0,1-e*2.2);
+  if(THUMB&&!window.__t0){window.__t0=now;}if(THUMB&&now-window.__t0>1500)window.__ready=true;
   renderer.render(scene,camera);
   // labels
   const op=Math.max(0,(e-.35)/.5);
